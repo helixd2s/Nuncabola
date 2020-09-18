@@ -1,0 +1,6 @@
+Mesh => Geometry (Materials)
+Body => Instance
+
+Every Mesh will contain pointer into `vlr::GeometryDesc` with `vlr::Geometry`
+Every Body will contain pointer into `vkh::GeometrySet` (due re-usable concept)
+Every Draw call of Body will used `vlr::GeometryInstance` (which pointed to geometry sets)

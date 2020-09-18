@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="nuncabola">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/nuncabola.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
