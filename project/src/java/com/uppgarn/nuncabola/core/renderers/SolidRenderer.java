@@ -21,6 +21,11 @@ import com.uppgarn.nuncabola.core.graphics.*;
 import com.uppgarn.nuncabola.core.math.*;
 import com.uppgarn.nuncabola.core.physics.*;
 import com.uppgarn.nuncabola.core.solid.*;
+import org.ejml.data.FMatrix4;
+import org.ejml.data.FMatrix4x4;
+import org.ejml.dense.fixed.CommonOps_FDF4;
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import static com.uppgarn.nuncabola.core.renderers.RendererConstants.*;
 
@@ -37,6 +42,7 @@ final class SolidRenderer {
   
   private Asset[]             assets;
   private Mesh [][]           meshArrays;
+  private BodySet[]           bodySets;
   private Map<Pass, PassInfo> passInfos;
   private boolean             reflectiveUsed;
   
@@ -50,6 +56,7 @@ final class SolidRenderer {
     meshArrays     = createMeshArrays();
     passInfos      = createPassInfos();
     reflectiveUsed = createReflectiveUsed();
+    bodySets       = createBodySets();
   }
   
   private Asset[] createAssets() {
@@ -62,6 +69,10 @@ final class SolidRenderer {
     return assets;
   }
   
+  private BodySet[] createBodySets() {
+    return MeshCreator.createBodySets(sol.base, assets);
+  }
+
   private Mesh[][] createMeshArrays() {
     return MeshCreator.createMeshArrays(sol.base, assets);
   }
@@ -101,16 +112,22 @@ final class SolidRenderer {
     motion.getBodyOrientation(e, body, 0.0f);
     
     float a = v.asAxisAngle(e);
-    
+
+    //FMatrix4x4 transformation = new FMatrix4x4(1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f);
+    //Matrix4 transformation = new Matrix4();
+    //transformation.setIdentity();
+    Matrix4f transformation = new Matrix4f();
     if (!((p.x == 0.0f) && (p.y == 0.0f) && (p.z == 0.0f))) {
-      glTranslatef(p.x, p.y, p.z);
+      transformation = transformation.translate(new Vector3f(p.x, p.y, p.z));
+      //glTranslatef(p.x, p.y, p.z);
     }
     if (!(((v.x == 0.0f) && (v.y == 0.0f) && (v.z == 0.0f)) || (a == 0.0f))) {
-      glRotatef((float) Math.toDegrees(a), v.x, v.y, v.z);
+      transformation = transformation.rotate(a, new Vector3f(v.x, v.y, v.z));
+      //glRotatef((float) Math.toDegrees(a), v.x, v.y, v.z);
     }
-    
+    glMultMatrixf(transformation.get(new float[16]));
+
     // Apply the shadow transform to the texture matrix.
-    
     if (sol.balls.length > 0) {
       Ball ball = sol.balls[0];
       
@@ -137,7 +154,7 @@ final class SolidRenderer {
             // Move the shadow texture under the ball.
             
             glTranslatef(-ball.p.x, -ball.p.y, -ball.p.z);
-            
+
             // Apply the body position and rotation.
             
             glTranslatef(p.x, p.y, p.z);
@@ -176,6 +193,10 @@ final class SolidRenderer {
     mesh.draw(state);
   }
   
+  private void pushGeometrySetInstance(BodySet set) {
+    // TODO: 
+  }
+  
   private void drawBody(State state, int bodyIdx, PassInfo passInfo) {
     if (!passInfo.includesBody(bodyIdx)) {
       return;
@@ -186,10 +207,22 @@ final class SolidRenderer {
     glPushMatrix();
     {
       transform(state, body);
-      
+
       for (int meshIdx = 0; meshIdx < meshArrays[bodyIdx].length; meshIdx++) {
         drawMesh(state, bodyIdx, meshIdx, passInfo);
       }
+    }
+    glPopMatrix();
+  }
+
+  private void rayTraceBody(State state, int bodyIdx) {
+    BodySet set = bodySets[bodyIdx];
+    Body body = sol.base.bodies[bodyIdx];
+    
+    glPushMatrix();
+    {
+      transform(state, body);
+      pushGeometrySetInstance(set); // TODO: Create Instance
     }
     glPopMatrix();
   }
@@ -200,6 +233,12 @@ final class SolidRenderer {
     }
   }
   
+  private void rayTraceBodies(State state){
+    for (int bodyIdx = 0; bodyIdx < sol.base.bodies.length; bodyIdx++) {
+      rayTraceBody(state, bodyIdx);
+    }
+  }
+
   public void drawOpaqueAndTransparent(
       State   state,
       boolean depthMask,
@@ -226,6 +265,10 @@ final class SolidRenderer {
     }
     if (!depthTest) {
       glEnable(GL_DEPTH_TEST);
+    }
+
+    { // CRITICAL
+      rayTraceBodies(state);
     }
     
     // Revert the buffer object state.
@@ -334,7 +377,7 @@ final class SolidRenderer {
       glTranslatef(bill.p.x, bill.p.y, bill.p.z);
       
       if ((m_ != null) && ((bill.flags & Billboard.NO_FACE) == 0)) {
-        glMultMatrix(Gfx.buffer(m_));
+        glMultMatrixf(Gfx.buffer(m_));
       }
       
       if (rx != 0.0f) {
@@ -369,19 +412,23 @@ final class SolidRenderer {
   }
   
   public void deinitialize() {
+    // Free GeometrySets for new shapes
+    for (BodySet set: bodySets) {
+      set.deinitialize();
+    }
+
     for (Mesh[] meshes: meshArrays) {
       for (Mesh mesh: meshes) {
         mesh.deinitialize();
       }
     }
-    
+
     for (Asset asset: assets) {
       asset.deinitialize();
     }
   }
   
   // Storage for reusable objects to minimize object creation.
-  
   private final Quaternion transform_e = new Quaternion();
   private final Vector3    transform_p = new Vector3();
   private final Vector3    transform_v = new Vector3();

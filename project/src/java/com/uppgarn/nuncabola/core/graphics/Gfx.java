@@ -23,11 +23,13 @@ import com.uppgarn.nuncabola.core.math.*;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
+import static org.lwjgl.glfw.GLFW.glfwExtensionSupported;
 import static org.lwjgl.opengl.EXTTextureFilterAnisotropic.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL12.*;
 import static org.lwjgl.opengl.GL13.*;
-import static org.lwjgl.opengl.SGISGenerateMipmap.*;
+import static org.lwjgl.opengl.GL14.GL_GENERATE_MIPMAP;
+//import static org.lwjgl.opengl.SGISGenerateMipmap.*;
 
 import java.nio.*;
 
@@ -79,9 +81,10 @@ public final class Gfx {
     
     configure();
   }
-  
+
   private static void checkVersion() throws GfxException {
-    if (!GLContext.getCapabilities().OpenGL13) {
+    //if (!GLContext.getCapabilities().OpenGL13) {
+    if (false) { // TODO: OpenGL Capability Test
       throw new GfxException("Unsupported OpenGL version");
     }
   }
@@ -91,13 +94,13 @@ public final class Gfx {
   }
   
   private static void checkExtensions() throws GfxException {
-    if (!GLContext.getCapabilities().GL_ARB_vertex_buffer_object) {
+    if (!glfwExtensionSupported("GL_ARB_vertex_buffer_object")) {
       failExtension("ARB_vertex_buffer_object");
     }
-    if (!GLContext.getCapabilities().GL_ARB_point_sprite) {
+    if (!glfwExtensionSupported("GL_ARB_point_sprite")) {
       failExtension("ARB_point_sprite");
     }
-    if (!GLContext.getCapabilities().GL_ARB_point_parameters) {
+    if (!glfwExtensionSupported("GL_ARB_point_parameters")) {
       failExtension("ARB_point_parameters");
     }
   }
@@ -150,8 +153,8 @@ public final class Gfx {
     glMatrixMode(GL_PROJECTION);
     {
       glLoadIdentity();
-      
-      glMultMatrix(buffer(
+
+      glMultMatrixf(buffer(
          c / a,
          0.0f,
          0.0f,
@@ -255,13 +258,12 @@ public final class Gfx {
     
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    
+
     if (allowMipmap
         && mipmap
-        && GLContext.getCapabilities().GL_SGIS_generate_mipmap) {
+        && glfwExtensionSupported("GL_SGIS_generate_mipmap")) {
       glTexParameteri(
-        GL_TEXTURE_2D,
-        GL_GENERATE_MIPMAP_SGIS,
+        GL_TEXTURE_2D, GL_GENERATE_MIPMAP,
         GL_TRUE);
       glTexParameteri(
         GL_TEXTURE_2D,
@@ -270,7 +272,7 @@ public final class Gfx {
     }
     
     if ((aniso > 0)
-        && GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
+        && glfwExtensionSupported("GL_EXT_texture_filter_anisotropic")) {
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
     }
     

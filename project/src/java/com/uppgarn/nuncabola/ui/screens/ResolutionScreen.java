@@ -19,6 +19,8 @@ package com.uppgarn.nuncabola.ui.screens;
 
 import com.uppgarn.nuncabola.core.display.*;
 import com.uppgarn.nuncabola.core.gui.*;
+import com.uppgarn.nuncabola.core.gui.Button;
+import com.uppgarn.nuncabola.core.gui.Container;
 import com.uppgarn.nuncabola.functions.*;
 import com.uppgarn.nuncabola.preferences.*;
 import com.uppgarn.nuncabola.ui.*;
@@ -27,7 +29,9 @@ import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
 
 import org.lwjgl.opengl.*;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public final class ResolutionScreen extends MenuScreen {
   private static final int COLUMN_COUNT = 4;

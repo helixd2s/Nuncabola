@@ -24,8 +24,10 @@ import com.uppgarn.nuncabola.ui.*;
 import com.uppgarn.nuncabola.ui.components.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_DELETE;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public final class PlayerScreen extends MenuScreen {
   public static final PlayerScreen INSTANCE = new PlayerScreen();
@@ -205,11 +207,11 @@ public final class PlayerScreen extends MenuScreen {
   
   @Override
   public void keyDown(int code, char ch) {
-    if (code == Keyboard.KEY_BACK) {
+    if (code == GLFW_KEY_BACKSPACE) {
       getGUI().setFocusWidget(okBtn);
-      
+
       performAction(Action.BACKSPACE);
-    } else if (code == Keyboard.KEY_DELETE) {
+    } else if (code == GLFW_KEY_DELETE) {
       getGUI().setFocusWidget(okBtn);
       
       performAction(Action.CLEAR);

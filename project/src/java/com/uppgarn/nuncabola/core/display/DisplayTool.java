@@ -18,9 +18,16 @@
 package com.uppgarn.nuncabola.core.display;
 
 import org.lwjgl.*;
+import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.*;
 
+import java.awt.*;
 import java.util.*;
+import java.util.List;
+
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoModes;
+
 
 public final class DisplayTool {
   private static boolean isModeBetter(
@@ -33,10 +40,10 @@ public final class DisplayTool {
     // 2. Otherwise, the higher color depth wins.
     // 3. A refresh rate matching the desktop refresh rate wins.
     // 4. Otherwise, the higher refresh rate wins.
-    
-    int bpp1    = mode1   .getBitsPerPixel();
-    int bpp2    = mode2   .getBitsPerPixel();
-    int deskBpp = deskMode.getBitsPerPixel();
+
+    int bpp1    = mode1   .getBitDepth();
+    int bpp2    = mode2   .getBitDepth();
+    int deskBpp = deskMode.getBitDepth();
     
     if ((bpp1 == deskBpp) && (bpp2 != deskBpp)) {
       return true;
@@ -51,10 +58,10 @@ public final class DisplayTool {
       return false;
     }
     
-    int freq1    = mode1   .getFrequency();
-    int freq2    = mode2   .getFrequency();
-    int deskFreq = deskMode.getFrequency();
-    
+    int freq1    = mode1   .getRefreshRate();
+    int freq2    = mode2   .getRefreshRate();
+    int deskFreq = deskMode.getRefreshRate();
+
     if (freq1 == deskFreq) {
       return true;
     }
@@ -64,20 +71,45 @@ public final class DisplayTool {
     
     return freq1 >= freq2;
   }
-  
+
   private static DisplayMode[] getAvailableModes() {
     try {
-      return Display.getAvailableDisplayModes();
-    } catch (LWJGLException ex) {
+      long monitor =  glfwGetPrimaryMonitor();
+      GLFWVidMode.Buffer modes = glfwGetVideoModes(monitor);
+      DisplayMode[] modes1 = new DisplayMode[(int)modes.stream().count()];
+      for (int i=0;i<modes1.length;i++) {
+        modes1[i] = new DisplayMode(
+                modes.get(i).width(),
+                modes.get(i).height(),
+                modes.get(i).redBits() + modes.get(i).greenBits() + modes.get(i).blueBits(),
+                modes.get(i).refreshRate()
+        );
+      }
+      return modes1;
+      //return Display.getAvailableDisplayModes();
+    } catch (IllegalStateException ex) {
       return new DisplayMode[0];
     }
   }
-  
+
+  private static DisplayMode getDesktopMode(){
+    DisplayMode[] modes = getAvailableModes();
+    int width = 800, height = 600, bits = 24, refresh = 30;
+    for (int i=0;i<modes.length;i++) {
+      DisplayMode mode = modes[i];
+      width = Math.max(mode.getWidth(), width);
+      height = Math.max(mode.getHeight(), height);
+      bits = Math.max(mode.getBitDepth(), bits);
+      refresh = Math.max(mode.getRefreshRate(), refresh);
+    }
+    return new DisplayMode(width, height, bits, refresh);
+  }
+
   public static Set<DisplayMode> getModes() {
     Set<DisplayMode> modes = new HashSet<>();
     
     DisplayMode[] availModes = getAvailableModes();
-    DisplayMode   deskMode   = Display.getDesktopDisplayMode();
+    DisplayMode   deskMode   = getDesktopMode();
     
     // Iterate over all available modes, only keeping the best
     // for each resolution.
@@ -138,14 +170,14 @@ public final class DisplayTool {
   public static DisplayMode getMode(int width, int height) {
     int modeWidth;
     int modeHeight;
-    
+
+    //
     Set<DisplayMode> modes = getModes();
-    
+    DisplayMode deskMode = getDesktopMode();
+
+    //
     if ((width <= 0) || (height <= 0)) {
       // No width and/or height given, select default size.
-      
-      DisplayMode deskMode = Display.getDesktopDisplayMode();
-      
       if ((deskMode.getWidth() > 800) && (deskMode.getHeight() > 600)) {
         modeWidth  = 800;
         modeHeight = 600;
@@ -171,18 +203,16 @@ public final class DisplayTool {
     
     modeWidth  = Math.min(modeWidth,  maxModeWidth);
     modeHeight = Math.min(modeHeight, maxModeHeight);
-    
+
     // Find fullscreen-capable mode with the desired size.
-    
     for (DisplayMode mode: modes) {
       if ((mode.getWidth() == modeWidth) && (mode.getHeight() == modeHeight)) {
         return mode;
       }
     }
-    
+
     // Failing that, return a windowed-only mode.
-    
-    return new DisplayMode(modeWidth, modeHeight);
+    return new DisplayMode(modeWidth, modeHeight, deskMode.getBitDepth(), deskMode.getRefreshRate());
   }
   
   private DisplayTool() {

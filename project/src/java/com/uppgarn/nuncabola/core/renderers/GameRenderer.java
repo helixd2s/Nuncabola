@@ -163,22 +163,22 @@ public final class GameRenderer {
   private void drawLight(float t) {
     // Configure the lighting.
     
-    glLight(GL_LIGHT0, GL_POSITION, Gfx.buffer(-8.0f, +32.0f, -8.0f, 0.0f));
-    glLight(GL_LIGHT0, GL_DIFFUSE,  Gfx.buffer(1.0f, 0.8f, 0.8f, 1.0f));
-    glLight(GL_LIGHT0, GL_SPECULAR, Gfx.buffer(1.0f, 0.8f, 0.8f, 1.0f));
-    glLight(GL_LIGHT0, GL_AMBIENT,  Gfx.buffer(0.8f, 0.8f, 0.8f, 1.0f));
-    
-    glLight(GL_LIGHT1, GL_POSITION, Gfx.buffer(+8.0f, +32.0f, +8.0f, 0.0f));
-    glLight(GL_LIGHT1, GL_DIFFUSE,  Gfx.buffer(0.8f, 1.0f, 0.8f, 1.0f));
-    glLight(GL_LIGHT1, GL_SPECULAR, Gfx.buffer(0.8f, 1.0f, 0.8f, 1.0f));
-    glLight(GL_LIGHT1, GL_AMBIENT,  Gfx.buffer(0.8f, 0.8f, 0.8f, 1.0f));
+    glLightfv(GL_LIGHT0, GL_POSITION, Gfx.buffer(-8.0f, +32.0f, -8.0f, 0.0f));
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  Gfx.buffer(1.0f, 0.8f, 0.8f, 1.0f));
+    glLightfv(GL_LIGHT0, GL_SPECULAR, Gfx.buffer(1.0f, 0.8f, 0.8f, 1.0f));
+    glLightfv(GL_LIGHT0, GL_AMBIENT,  Gfx.buffer(0.8f, 0.8f, 0.8f, 1.0f));
+
+    glLightfv(GL_LIGHT1, GL_POSITION, Gfx.buffer(+8.0f, +32.0f, +8.0f, 0.0f));
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  Gfx.buffer(0.8f, 1.0f, 0.8f, 1.0f));
+    glLightfv(GL_LIGHT1, GL_SPECULAR, Gfx.buffer(0.8f, 1.0f, 0.8f, 1.0f));
+    glLightfv(GL_LIGHT1, GL_AMBIENT,  Gfx.buffer(0.8f, 0.8f, 0.8f, 1.0f));
     
     float x = (float) Math.cos(t);
     float z = (float) Math.sin(t);
-    
-    glLight(GL_LIGHT2, GL_POSITION, Gfx.buffer(x, 0.0f, z, 0.0f));
-    glLight(GL_LIGHT2, GL_DIFFUSE,  Gfx.buffer(1.0f, 1.0f, 1.0f, 1.0f));
-    glLight(GL_LIGHT2, GL_SPECULAR, Gfx.buffer(1.0f, 1.0f, 1.0f, 1.0f));
+
+    glLightfv(GL_LIGHT2, GL_POSITION, Gfx.buffer(x, 0.0f, z, 0.0f));
+    glLightfv(GL_LIGHT2, GL_DIFFUSE,  Gfx.buffer(1.0f, 1.0f, 1.0f, 1.0f));
+    glLightfv(GL_LIGHT2, GL_SPECULAR, Gfx.buffer(1.0f, 1.0f, 1.0f, 1.0f));
     
     // Enable scene lights.
     
@@ -402,7 +402,7 @@ public final class GameRenderer {
       v.subtract(view.c, view.p);
       
       glTranslatef(0.0f, 0.0f, -v.length());
-      glMultMatrix(Gfx.buffer(m_));
+      glMultMatrixf(Gfx.buffer(m_));
       glTranslatef(-view.c.x, -view.c.y, -view.c.z);
       
       if (pose != Pose.BALL) {

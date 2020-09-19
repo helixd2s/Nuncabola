@@ -21,9 +21,12 @@ import com.uppgarn.nuncabola.core.graphics.*;
 import com.uppgarn.nuncabola.core.image.*;
 import com.uppgarn.nuncabola.core.util.Util;
 
+import com.uppgarn.nuncabola.ui.UI;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.ARBVertexBufferObject.*;
 import static org.lwjgl.opengl.GL11.*;
 
@@ -166,8 +169,12 @@ public final class Progress {
       Gfx.clear();
       
       draw(1.0f);
-      
-      Display.update();
+
+      if (UI.window != 0) {
+        glfwSwapBuffers(UI.window);
+      };
+      glfwPollEvents();
+      //Display.update();
     }
   }
   
@@ -190,7 +197,11 @@ public final class Progress {
       
       draw(1.0f - (float) (Math.min(t, t1) - t0) / (t1 - t0));
       
-      Display.update();
+      //Display.update();
+      if (UI.window != 0) {
+        glfwSwapBuffers(UI.window);
+      };
+      glfwPollEvents();
     } while (t < t1);
   }
   

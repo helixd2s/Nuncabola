@@ -28,8 +28,9 @@ import com.uppgarn.nuncabola.ui.*;
 import com.uppgarn.nuncabola.ui.hud.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F5;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public final class PlayMainScreen extends PlayActionScreen {
   public static final PlayMainScreen INSTANCE = new PlayMainScreen();
@@ -221,7 +222,7 @@ public final class PlayMainScreen extends PlayActionScreen {
         
         UI.gotoScreen(PlayReadyScreen.INSTANCE);
       }
-    } else if (code == Keyboard.KEY_F5) {
+    } else if (code == GLFW_KEY_F5) {
       if (getBooleanPref(Pref.CHEAT)) {
         UI.gotoScreen(PlayLookScreen.INSTANCE);
       }

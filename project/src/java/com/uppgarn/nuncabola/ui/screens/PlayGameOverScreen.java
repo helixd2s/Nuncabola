@@ -24,8 +24,9 @@ import com.uppgarn.nuncabola.preferences.*;
 import com.uppgarn.nuncabola.ui.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public final class PlayGameOverScreen extends GUIScreen {
   public static final PlayGameOverScreen INSTANCE = new PlayGameOverScreen();
@@ -75,7 +76,7 @@ public final class PlayGameOverScreen extends GUIScreen {
   
   @Override
   public void keyDown(int code, char ch) {
-    if (code == Keyboard.KEY_RETURN) {
+    if (code == GLFW_KEY_ENTER) {
       exitRequested();
     }
   }

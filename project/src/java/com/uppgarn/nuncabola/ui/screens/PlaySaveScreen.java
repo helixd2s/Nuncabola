@@ -22,7 +22,10 @@ import com.uppgarn.nuncabola.functions.*;
 import com.uppgarn.nuncabola.ui.*;
 import com.uppgarn.nuncabola.ui.components.*;
 
-import org.lwjgl.input.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_BACKSPACE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_DELETE;
+
+//import org.lwjgl.input.*;
 
 public final class PlaySaveScreen extends MenuScreen {
   public static final PlaySaveScreen INSTANCE = new PlaySaveScreen();
@@ -193,11 +196,11 @@ public final class PlaySaveScreen extends MenuScreen {
   
   @Override
   public void keyDown(int code, char ch) {
-    if (code == Keyboard.KEY_BACK) {
+    if (code == GLFW_KEY_BACKSPACE) {
       getGUI().setFocusWidget(saveBtn);
       
       performAction(Action.BACKSPACE);
-    } else if (code == Keyboard.KEY_DELETE) {
+    } else if (code == GLFW_KEY_DELETE) {
       getGUI().setFocusWidget(saveBtn);
       
       performAction(Action.CLEAR);

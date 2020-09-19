@@ -122,16 +122,16 @@ final class State {
     // Set material properties.
     
     if ((asset.getDInt() != lastDInt) && !colorMtrlEnabled) {
-      glMaterial (GL_FRONT_AND_BACK, GL_DIFFUSE,   Gfx.buffer(mtrl.d));
+      glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE,   Gfx.buffer(mtrl.d));
     }
     if ((asset.getAInt() != lastAInt) && !colorMtrlEnabled) {
-      glMaterial (GL_FRONT_AND_BACK, GL_AMBIENT,   Gfx.buffer(mtrl.a));
+      glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT,   Gfx.buffer(mtrl.a));
     }
     if (asset.getSInt() != lastAsset.getSInt()) {
-      glMaterial (GL_FRONT_AND_BACK, GL_SPECULAR,  Gfx.buffer(mtrl.s));
+      glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR,  Gfx.buffer(mtrl.s));
     }
     if (asset.getEInt() != lastAsset.getEInt()) {
-      glMaterial (GL_FRONT_AND_BACK, GL_EMISSION,  Gfx.buffer(mtrl.e));
+      glMaterialfv(GL_FRONT_AND_BACK, GL_EMISSION,  Gfx.buffer(mtrl.e));
     }
     if (asset.getHInt() != lastAsset.getHInt()) {
       glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, mtrl.h);
@@ -237,7 +237,7 @@ final class State {
       if ((lastFlags & Material.PARTICLE) == 0) {
         glEnable (GL_POINT_SPRITE_ARB);
         glTexEnvi(GL_POINT_SPRITE_ARB, GL_COORD_REPLACE_ARB, GL_TRUE);
-        glPointParameterARB(
+        glPointParameterfvARB(
           GL_POINT_DISTANCE_ATTENUATION_ARB,
           Gfx.buffer(0.0f, 0.0f, 1.0f));
         glPointParameterfARB(GL_POINT_SIZE_MIN_ARB, 1.0f);

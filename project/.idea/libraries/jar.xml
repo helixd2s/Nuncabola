@@ -1,10 +1,67 @@
 <component name="libraryTable">
   <library name="jar">
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/../lib/jar" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/javacpp-windows-x86_64.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-jawt.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-openal-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-fdense-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/joml-jdk8-1.9.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-core-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/joml-1.9.25.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-ddense-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-zdense-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-cdense-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-experimental-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-dsparse-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/javacpp.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-glfw-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-glfw.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-simple-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-openal.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opengl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opengl-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opus-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opus.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-shaderc-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-shaderc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-spvc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-spvc-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-vma.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-vma-natives-windows.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-vulkan.jar!/" />
     </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-    <jarDirectory url="file://$PROJECT_DIR$/../lib/jar" recursive="false" />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-glfw-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-openal-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-jawt-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opengl-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opus-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-shaderc-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-spvc-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-vma-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-vulkan-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-jawt-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-zdense-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-openal-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-simple-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-fdense-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-cdense-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-core-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-dsparse-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-experimental-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-glfw-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/ejml-ddense-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opengl-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-opus-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-shaderc-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-spvc-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-vma-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../lib/jar/lwjgl-vulkan-sources.jar!/" />
+    </SOURCES>
   </library>
 </component>

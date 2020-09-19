@@ -49,7 +49,7 @@ final class BallRenderer {
     {
       // Apply the ball rotation.
       
-      glMultMatrix(Gfx.buffer(ballM_));
+      glMultMatrixf(Gfx.buffer(ballM_));
       
       // Draw the solid billboard geometry.
       
@@ -98,7 +98,7 @@ final class BallRenderer {
     
     if (layer.getPendulum()) {
       glPushMatrix();
-      glMultMatrix(Gfx.buffer(pendM_));
+      glMultMatrixf(Gfx.buffer(pendM_));
     }
     
     // Draw the inner/outer opaque and transparent geometry.

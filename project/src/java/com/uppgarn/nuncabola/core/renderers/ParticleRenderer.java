@@ -56,7 +56,7 @@ final class ParticleRenderer {
       final float size = 0.1f;
       
       glTranslatef(part.p.x, part.p.y, part.p.z);
-      glMultMatrix(Gfx.buffer(m_));
+      glMultMatrixf(Gfx.buffer(m_));
       glRotatef(part.w * t, 0.0f, 0.0f, 1.0f);
       glScalef(size, size, 1.0f);
       

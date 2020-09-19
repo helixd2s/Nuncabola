@@ -52,7 +52,7 @@ final class ALStreamedSource {
   private Integer createSource() {
     try {
       return alGenSources();
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       return null;
     }
   }
@@ -64,7 +64,7 @@ final class ALStreamedSource {
       alGenBuffers(buffers);
       
       return buffers;
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       return null;
     }
   }
@@ -76,7 +76,7 @@ final class ALStreamedSource {
     
     try {
       alSourcef(source, AL_GAIN, volume);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -90,7 +90,7 @@ final class ALStreamedSource {
     
     try {
       alSourcePlay(source);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -104,7 +104,7 @@ final class ALStreamedSource {
     
     try {
       alSourcePause(source);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -118,7 +118,7 @@ final class ALStreamedSource {
     
     try {
       alSourceStop(source);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -168,7 +168,7 @@ final class ALStreamedSource {
       if (play && (alGetSourcei(source, AL_SOURCE_STATE) != AL_PLAYING)) {
         alSourcePlay(source);
       }
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -177,13 +177,13 @@ final class ALStreamedSource {
     if (source != null) {
       try {
         alDeleteSources(source);
-      } catch (OpenALException ex) {
+      } catch (IllegalStateException ex) {
       }
     }
     if (buffers != null) {
       try {
         alDeleteBuffers(buffers);
-      } catch (OpenALException ex) {
+      } catch (IllegalStateException ex) {
       }
     }
   }

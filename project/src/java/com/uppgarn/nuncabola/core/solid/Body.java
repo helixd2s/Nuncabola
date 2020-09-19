@@ -17,6 +17,8 @@
 
 package com.uppgarn.nuncabola.core.solid;
 
+import com.helixd2s.valera.ValerABase;
+
 public final class Body {
   /**
    * Index of node.
@@ -52,7 +54,15 @@ public final class Body {
    * Index of second (rotational) mover.
    */
   public int mover1Idx;
-  
+
+  /**
+   * Ray Tracing Geometry Set for Reusing in Instance "Draw"
+   */
+  //public ValerABase.GeometrySet geometrySet;
+
+  /**
+   *
+   */
   public Body() {
     nodeIdx = -1;
     

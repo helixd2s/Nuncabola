@@ -24,6 +24,8 @@ import com.uppgarn.codelibf.util.*;
 import org.lwjgl.*;
 import org.lwjgl.openal.*;
 
+import static org.lwjgl.openal.ALC10.*;
+
 public final class Audio {
   private static boolean enabled;
   
@@ -31,11 +33,24 @@ public final class Audio {
   private static Music  music;
   
   private static TerminableThread thread;
+  private static long device;
+  private static long context;
   
   public static void initialize(Folder dataFolder, int bufferSize) {
     try {
-      AL.create();
-      
+      //
+      String defaultDeviceName = alcGetString(0, ALC_DEFAULT_DEVICE_SPECIFIER);
+      device = alcOpenDevice(defaultDeviceName);
+
+      //
+      ALCCapabilities alcCapabilities = ALC.createCapabilities(device);
+      ALCapabilities alCapabilities = AL.createCapabilities(alcCapabilities);
+
+      //
+      int[] attributes = {0};
+      context = alcCreateContext(device, attributes);
+      alcMakeContextCurrent(context);
+
       enabled = true;
       
       sounds = new Sounds(dataFolder, 524288);
@@ -44,7 +59,7 @@ public final class Audio {
       thread = new AudioThread();
       thread.setPriority(Thread.MAX_PRIORITY);
       thread.start();
-    } catch (LWJGLException ex) {
+    } catch (IllegalStateException ex) {
       enabled = false;
     }
   }
@@ -163,7 +178,9 @@ public final class Audio {
     sounds.deinitialize();
     music .deinitialize();
     
-    AL.destroy();
+    //AL.destroy();
+    alcDestroyContext(context);
+    alcCloseDevice(device);
     
     sounds = null;
     music  = null;

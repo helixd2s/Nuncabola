@@ -44,9 +44,9 @@ public final class GUIHome {
     
     theme   = Theme.create(dataFolder, "gui/".concat(themeDir));
     lookMgr = new LookManager();
-    
+
     textImagizers = createTextImagizers();
-    digitArrays   = createDigitArrays();
+    digitArrays   = createDigitArrays(); // BROKEN!
   }
   
   private static int createReferenceHeight() {

@@ -28,6 +28,9 @@ final class MeshCreator {
   public static Mesh[][] createMeshArrays(SolidBase solBase, Asset[] assets) {
     return new MeshCreator(solBase, assets).createMeshArrays();
   }
+  public static BodySet[] createBodySets(SolidBase solBase, Asset[] assets) {
+    return new MeshCreator(solBase, assets).createBodySets();
+  }
   
   private final SolidBase solBase;
   private final Asset[]   assets;
@@ -183,7 +186,7 @@ final class MeshCreator {
     fillBuffers(body.geom0Idx, body.geomCount, mtrlIdx);
   }
   
-  private Mesh createMesh(Body body, int mtrlIdx) {
+  private Mesh createMesh(Body body, int mtrlIdx, int meshIdx) {
     vboBuf.clear();
     eboBuf.clear();
     
@@ -194,9 +197,13 @@ final class MeshCreator {
     vboBuf.flip();
     eboBuf.flip();
     
-    return new Mesh(assets[mtrlIdx], vboBuf, eboBuf);
+    return new Mesh(assets[mtrlIdx], solBase, vboBuf, eboBuf, body, meshIdx, mtrlIdx);
   }
-  
+
+  private BodySet createBodySet(SolidBase solBase, Body body) {
+    return (new BodySet(solBase, body, createMeshes(body)));
+  }
+
   private Mesh[] createMeshes(Body body) {
     Mesh[] meshes = new Mesh[getMaterialCount(body)];
     
@@ -204,13 +211,24 @@ final class MeshCreator {
         mtrlIdx < solBase.mtrls.length;
         mtrlIdx++) {
       if (isMaterialUsed(body, mtrlIdx)) {
-        meshes[meshIdx++] = createMesh(body, mtrlIdx);
+        int meshId = meshIdx++;
+        meshes[meshId] = createMesh(body, mtrlIdx, meshId);
       }
     }
     
     return meshes;
   }
-  
+
+  private BodySet[] createBodySets() {
+    BodySet[] bodySets = new BodySet[solBase.bodies.length];
+    
+    for (int idx = 0; idx < solBase.bodies.length; idx++) {
+      bodySets[idx] = createBodySet(solBase, solBase.bodies[idx]);
+    }
+    
+    return bodySets;
+  }
+
   private Mesh[][] createMeshArrays() {
     Mesh[][] meshArrays = new Mesh[solBase.bodies.length][];
     

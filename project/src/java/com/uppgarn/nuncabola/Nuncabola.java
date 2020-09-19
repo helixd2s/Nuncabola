@@ -28,6 +28,9 @@ import org.lwjgl.*;
 
 import java.nio.file.*;
 
+import static org.lwjgl.glfw.GLFW.glfwInit;
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+
 public final class Nuncabola {
   public static void main(String[] args) throws Throwable {
     // Create error logger.
@@ -51,9 +54,11 @@ public final class Nuncabola {
       
       throw t;
     }
+
+    System.exit(-1);
   }
   
-  private static int run(String[] args, ErrorLogger errorLogger) {
+  private static int run(String[] args, ErrorLogger errorLogger) throws UIException {
     int returnCode = 0;
     
     // Parse arguments.
@@ -149,13 +154,13 @@ public final class Nuncabola {
     }
     
     // Initialize LWJGL.
-    
+
     try {
-      Sys.initialize();
-    } catch (LinkageError err) {
+      //Sys.initialize();
+      if ( !glfwInit() ) { throw new IllegalStateException("Unable to initialize GLFW"); }
+    } catch (IllegalStateException err) {
       System.err.println("Failure to load LWJGL.");
       err.printStackTrace();
-      
       return 1;
     }
     
@@ -178,31 +183,27 @@ public final class Nuncabola {
     } else {
       mode = new UIMode.Replay(replayFile);
     }
-    
-    // Initialize UI.
-    
+
     try {
+      // Initialize UI.
       UI.initialize(mode);
-      
       try {
         // Run main loop.
-        
         UI.loop(errorLogger);
       } finally {
         // Deinitialize UI.
-        
         UI.deinitialize();
       }
     } catch (UIException ex) {
       alert("Failure to create UI.", ex);
-      
+      glfwTerminate();
       returnCode = 1;
     }
-    
+
     // Deinitialize base functions.
-    
     BaseFuncs.deinitialize();
-    
+
+    //
     return returnCode;
   }
   
@@ -255,7 +256,7 @@ public final class Nuncabola {
     if (t != null) {
       t.printStackTrace();
     }
-    
-    Sys.alert(ProgramConstants.TITLE, msg);
+
+    //Sys.alert(ProgramConstants.TITLE, msg);
   }
 }

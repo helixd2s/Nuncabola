@@ -17,6 +17,9 @@
 
 package com.uppgarn.nuncabola.ui;
 
+import com.helixd2s.valera.VKt;
+import com.helixd2s.valera.ValerABase;
+import com.helixd2s.valera.ValerACore;
 import com.uppgarn.nuncabola.core.audio.*;
 import com.uppgarn.nuncabola.core.display.*;
 import com.uppgarn.nuncabola.core.fps.*;
@@ -32,13 +35,22 @@ import com.uppgarn.nuncabola.ui.resources.*;
 import com.uppgarn.nuncabola.ui.screens.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.*;
+//import static org.lwjgl.opengl.WGL.Functions.GetProcAddress;
+import static org.lwjgl.glfw.GLFW.Functions.GetProcAddress;
 
 import com.uppgarn.codelibf.io.*;
 
+import org.bytedeco.javacpp.LongPointer;
 import org.lwjgl.*;
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.opengl.*;
+import org.lwjgl.vulkan.*;
 
+import java.awt.*;
 import java.io.*;
 import java.nio.*;
 import java.util.*;
@@ -50,10 +62,9 @@ public final class UI {
     new PrintStream(NullOutputStream.getInstance());
   
   private static UIMode mode;
-  
+
   private static boolean    windowActive;
-  private static char []    origChs;
-  private static Controller controller;
+  //private static Controller controller;
   private static float[]    axisValues;
   private static boolean    xAxisValid;
   private static boolean    yAxisValid;
@@ -69,13 +80,55 @@ public final class UI {
   private static long lastTime;
   
   private static UIException storedEx;
-  
+  public static long window = 0;
+  public static VkInstance vInstance;
+  public static VkPhysicalDevice vPhysicalDevice;
+  public static VkDevice vDevice;
+  public static ValerACore.Driver vDriver;
+  public static LongPointer vInstanceHandle;
+  public static LongPointer vDeviceHandle;
+  public static LongPointer vPhysicalDeviceHandle;
+
+  public static class KeyboardState {
+    public static int     code = -1;
+    public static boolean down = false;
+    public static char    ch = ' ';
+    public static char [] origChs;
+
+
+    public static GLFWKeyCallback keyCallback;
+  };
+
+  public static class MouseState {
+    public static int     x       = 0;
+    public static int     y       = 0;
+    public static int     dx      = 0;
+    public static int     dy      = 0;
+    public static int     button  = -1;
+    public static boolean down    = false;
+    public static int     wheel   = 0;
+    public static boolean grabbed = false;
+
+    public static GLFWMouseButtonCallback mouseCallback;
+    public static GLFWCursorPosCallback posCallback;
+  };
+
+
+  //
+  public static ValerABase.Framebuffer framebuffer;
+  public static ValerABase.PipelineLayout pipelineLayout;
+  public static ValerABase.TextureSet textureSet;
+  public static ValerABase.SamplerSet samplerSet;
+  public static ValerABase.Background background;
+  public static ValerABase.MaterialSet materialSet;
+
+
   public static void initialize(UIMode mode) throws UIException {
     UI.mode = mode;
     
     try {
       initializeDisplay();
-    } catch (LWJGLException ex) {
+    } catch (IllegalStateException ex) {
       throw new UIException(ex);
     }
     try {
@@ -145,8 +198,8 @@ public final class UI {
     
     return icons;
   }
-  
-  private static void initializeDisplay() throws LWJGLException {
+
+  private static void initializeDisplay() throws IllegalStateException {
     int     width       = getIntPref    (Pref.SCREEN_WIDTH);
     int     height      = getIntPref    (Pref.SCREEN_HEIGHT);
     boolean fullscreen  = getBooleanPref(Pref.FULLSCREEN);
@@ -155,32 +208,33 @@ public final class UI {
     boolean vSync       = getBooleanPref(Pref.V_SYNC);
     boolean reflection  = getBooleanPref(Pref.REFLECTION);
     int     multisample = getIntPref    (Pref.MULTISAMPLE);
-    
+
     DisplayMode displayMode = DisplayTool.getMode(width, height);
-    
+
     width      = displayMode.getWidth ();
     height     = displayMode.getHeight();
-    fullscreen = fullscreen && displayMode.isFullscreenCapable();
-    
+    fullscreen = fullscreen && false; //fullscreen && displayMode.isFullscreenCapable();
+
+    /*
     Display.setDisplayMode (displayMode);
     Display.setFullscreen  (fullscreen);
     Display.setLocation    (windowX, windowY);
     Display.setVSyncEnabled(vSync);
     Display.setTitle       (ProgramConstants.TITLE);
     Display.setIcon        (getIcons());
-    
+
     while (true) {
       PixelFormat format = new PixelFormat()
         .withBitsPerPixel(15)
         .withDepthBits   (16)
         .withStencilBits (reflection ? 1 : 0)
         .withSamples     (multisample);
-      
+
       try {
         Display.create(format);
-        
+
         break;
-      } catch (LWJGLException ex) {
+      } catch (IllegalStateException ex) {
         // If display creation failed, try again
         // with gradually lowered requirements.
         
@@ -194,14 +248,107 @@ public final class UI {
           throw ex;
         }
       }
+    }*/
+
+    window = 0;
+    if (fullscreen) {} else {
+      // Configure GLFW
+      glfwDefaultWindowHints();
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+      glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+      glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+      //glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+      glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_API);
+      glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NATIVE_CONTEXT_API);
+      ///glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, 1);
+
+      // Create the window
+      long monitor = glfwGetPrimaryMonitor();
+      window = glfwCreateWindow(width, height, "Hello World!", 0, 0);
+      if (window == 0) {
+        throw new RuntimeException("Failed to create the GLFW window");
+      }
+
+      //
+      glfwMakeContextCurrent(window);
+      GL.createCapabilities();
+      VKt.initializeGL(GetProcAddress);
+
+      // Java 8
+      glfwSetMouseButtonCallback(window, MouseState.mouseCallback = GLFWMouseButtonCallback.create((window, button, action, mods) -> {
+        UI.MouseState.button = button;
+        if (action == GLFW_PRESS) { UI.MouseState.down = true; };
+        if (action == GLFW_RELEASE) { UI.MouseState.down = false; };
+
+        if (screen == null) { return; };
+        UI.handleMouseEvent();
+      }));
+
+      // Java 8
+      glfwSetCursorPosCallback(window, MouseState.posCallback = GLFWCursorPosCallback.create((window, xpos, ypos) -> {
+        UI.MouseState.dx = (int)(xpos - (double)UI.MouseState.x);
+        UI.MouseState.dy = (int)(ypos - (double)UI.MouseState.y);
+        UI.MouseState.x = (int)xpos;
+        UI.MouseState.y = (int)ypos;
+        UI.MouseState.button = -1;
+
+        if (screen == null) { return; };
+        UI.handleMouseEvent();
+      }));
+
+      // With Java 8 you could also use lambda expressions for setting a callback
+      glfwSetKeyCallback(window, KeyboardState.keyCallback = GLFWKeyCallback.create((window, key, scancode, action, mods) -> {
+        UI.KeyboardState.code = key;
+        if (action == GLFW_PRESS) {
+          UI.KeyboardState.down = true;
+        };
+        if (action == GLFW_RELEASE) {
+          UI.KeyboardState.down = false;
+        };
+
+        String charcode = glfwGetKeyName(key, scancode);
+        if (charcode != null) {
+          UI.KeyboardState.ch = charcode.charAt(0);
+        };
+
+
+        if (screen == null) { return; };
+        UI.handleKeyEvent();
+      }));
     }
-    
+
+    //
+    vDriver = new ValerACore.Driver();
+    vInstanceHandle = vDriver.createInstance();
+    vInstance = new VkInstance(vInstanceHandle.get(), VkInstanceCreateInfo.create(vDriver.getInstanceCreateInfoAddress()));
+    vPhysicalDeviceHandle = vDriver.getPhysicalDevice();
+    vPhysicalDevice = new VkPhysicalDevice(vPhysicalDeviceHandle.get(), vInstance);
+    vDeviceHandle = vDriver.createDevice();
+    vDevice = new VkDevice(vDeviceHandle.get(), vPhysicalDevice, VkDeviceCreateInfo.create(vDriver.getDeviceCreateInfoAddress()));
+
+    //
     setPref(Pref.SCREEN_WIDTH,  width);
     setPref(Pref.SCREEN_HEIGHT, height);
     setPref(Pref.FULLSCREEN,    fullscreen);
     setPref(Pref.REFLECTION,    reflection);
     setPref(Pref.MULTISAMPLE,   multisample);
-    
+
+    //
+    ValerACore.DataSetCreateInfo info = new ValerACore.DataSetCreateInfo();
+    info.count().address();
+
+    //
+    framebuffer = new ValerABase.Framebuffer(vDriver.uniPtr());
+    pipelineLayout = new ValerABase.PipelineLayout(vDriver.uniPtr());
+    textureSet = new ValerABase.TextureSet(vDriver.uniPtr());
+    samplerSet = new ValerABase.SamplerSet(vDriver.uniPtr());
+    background = new ValerABase.Background(vDriver.uniPtr());
+    materialSet = new ValerABase.MaterialSet(vDriver.uniPtr(), info);
+
+    //
+    framebuffer.createFramebuffer(width, height);
+
+
     windowActive = false;
   }
   
@@ -217,31 +364,34 @@ public final class UI {
   }
   
   private static void initializeKeyboard() {
+    /*
     try {
       Keyboard.create();
       Keyboard.enableRepeatEvents(false);
     } catch (LWJGLException ex) {
       // No keyboard available.
     }
-    
-    origChs = new char[Keyboard.KEYBOARD_SIZE];
+    */
+
+    KeyboardState.origChs = new char[512];
   }
   
   private static void initializeMouse() {
+    /*
     try {
       Mouse.create();
     } catch (LWJGLException ex) {
       // No mouse available.
     }
+    */
   }
-  
+
   private static void initializeControllers() {
-    controller = null;
-    
+    /*controller = null;
+
     if (getBooleanPref(Pref.CONTROLLER)) {
       try {
         System.setOut(NULL_OUT);
-        
         try {
           Controllers.create(); // JInput may print warnings during this call
         } finally {
@@ -322,15 +472,15 @@ public final class UI {
           setPref(Pref.CONTROLLER_AXIS_Y, yAxis);
           setPref(Pref.CONTROLLER_AXIS_Z, zAxis);
         }
-      } catch (LWJGLException ex) {
+      } catch (IllegalStateException ex) {
         // No controllers available.
       }
     }
     
     xAxisValid = true;
-    yAxisValid = true;
+    yAxisValid = true;*/
   }
-  
+
   private static void initializeDataFuncs() {
     DataFuncs.initialize();
   }
@@ -347,10 +497,9 @@ public final class UI {
   private static void initializeGUIHome() {
     GUIHome.initialize(DataFuncs.getDataFolder(), getStringPref(Pref.THEME));
   }
-  
+
   private static void initializeAudio() {
     Audio.initialize(DataFuncs.getDataFolder(), getIntPref(Pref.AUDIO_BUFFER));
-    
     Audio.setSoundVolume(getIntPref(Pref.VOLUME_SOUND));
     Audio.setMusicVolume(getIntPref(Pref.VOLUME_MUSIC));
   }
@@ -404,8 +553,9 @@ public final class UI {
     Audio.playSound("snd/menu.ogg",   0.0f);
     Audio.playSound("snd/select.ogg", 0.0f);
   }
-  
+
   private static void clearEvents() {
+    /*
     if (Keyboard.isCreated()) {
       while (Keyboard.next()) {
       }
@@ -422,6 +572,17 @@ public final class UI {
     if ((screen != null) && Mouse.isCreated()) {
       screen.mouseMove(Mouse.getX(), Mouse.getY(), 0, 0);
     }
+    */
+
+    int     width       = getIntPref    (Pref.SCREEN_WIDTH);
+    int     height      = getIntPref    (Pref.SCREEN_HEIGHT);
+
+    if (screen != null) {
+      double[] xpos = new double[1], ypos = new double[1];
+      glfwGetCursorPos(window, xpos, ypos);
+      //glfwSetCursorPos(window, xpos[0], ypos[0]);
+      screen.mouseMove((int)xpos[0], height-(int)ypos[0], 0, 0);
+    }
   }
   
   public static UIMode getMode() {
@@ -431,13 +592,14 @@ public final class UI {
   public static HUD getHUD() {
     return hud;
   }
-  
+
+  // TODO: Grab Mouse from GLFW-3
   public static void setMouseGrabbed(boolean grabbed) {
-    if (Mouse.isCreated() && (Mouse.isGrabbed() != grabbed)) {
+    /*if (Mouse.isCreated() && (Mouse.isGrabbed() != grabbed)) {
       Mouse.setGrabbed(grabbed);
-    }
+    }*/
   }
-  
+
   public static float getScreenTime() {
     return screenTime;
   }
@@ -463,52 +625,56 @@ public final class UI {
   }
   
   private static void checkForWindowCloseRequest() {
-    if (Display.isCloseRequested()) {
+    //if (Display.isCloseRequested()) {
+    //  gotoScreen(null);
+    //}
+    if (glfwWindowShouldClose(window) ) {
       gotoScreen(null);
     }
   }
   
   private static void checkForWindowDeactivation() {
-    if (!Display.isActive()) {
+    //if (!Display.isActive()) {
+    if (glfwGetWindowAttrib(window, GLFW_FOCUSED) == 0) {
       if (windowActive) {
         windowActive = false;
-        
+
         screen.windowDeactivated();
       }
     } else {
       windowActive = true;
     }
   }
-  
-  private static void handleKeyEvent() {
-    int     code = Keyboard.getEventKey();
-    char    ch   = Keyboard.getEventCharacter();
-    boolean down = Keyboard.getEventKeyState();
-    
+
+  public static void handleKeyEvent() {
+    int     code = KeyboardState.code;//Keyboard.getEventKey();
+    char    ch   = KeyboardState.ch;//Keyboard.getEventCharacter();
+    boolean down = KeyboardState.down;//Keyboard.getEventKeyState();
+
     if (down) {
       // Key down.
       
-      origChs[code] = ch;
+      KeyboardState.origChs[code] = ch;
       
       switch (code) {
-        case Keyboard.KEY_F6: {
+        case GLFW_KEY_F6: {
           if (getBooleanPref(Pref.CHEAT)) {
             Gfx.toggleWire();
           }
           
           break;
         }
-        case Keyboard.KEY_F9: {
+        case GLFW_KEY_F9: {
           setPref(Pref.FPS, !getBooleanPref(Pref.FPS));
           
           break;
         }
-        case Keyboard.KEY_F12: {
+        case GLFW_KEY_F12: {
           ScreenshotFuncs.takeScreenshot();
           
           break;
         }
-        case Keyboard.KEY_ESCAPE: {
+        case GLFW_KEY_ESCAPE: {
           screen.exitRequested();
           
           break;
@@ -531,7 +697,7 @@ public final class UI {
     } else {
       // Key up.
       
-      screen.keyUp(code, ch, origChs[code]);
+      screen.keyUp(code, ch, KeyboardState.origChs[code]);
       
       if (screen == null) {
         return;
@@ -539,23 +705,26 @@ public final class UI {
       
       // Support for Alt+NumPad input method (Windows).
       
-      if (((code == Keyboard.KEY_LMENU) || (code == Keyboard.KEY_RMENU))
+      if (((code == GLFW_KEY_LEFT_ALT) || (code == GLFW_KEY_RIGHT_ALT))
           && (ch >= ' ')) {
         screen.textEntered(ch);
       }
     }
   }
-  
-  private static void handleMouseEvent() {
-    int     x       = Mouse.getEventX();
-    int     y       = Mouse.getEventY();
-    int     dx      = Mouse.getEventDX();
-    int     dy      = Mouse.getEventDY();
-    int     button  = Mouse.getEventButton();
-    boolean down    = Mouse.getEventButtonState();
-    int     wheel   = Mouse.getEventDWheel();
-    boolean grabbed = Mouse.isGrabbed();
-    
+
+  public static void handleMouseEvent() {
+    int     x       = MouseState.x;
+    int     y       = MouseState.y;
+    int     dx      = MouseState.dx;
+    int     dy      = MouseState.dy;
+    int     button  = MouseState.button;
+    boolean down    = MouseState.down;
+    int     wheel   = MouseState.wheel;
+    boolean grabbed = MouseState.grabbed;
+
+    int     width       = getIntPref    (Pref.SCREEN_WIDTH);
+    int     height      = getIntPref    (Pref.SCREEN_HEIGHT);
+
     if (button != -1) {
       // Button.
       
@@ -572,16 +741,17 @@ public final class UI {
       // Movement.
       
       if (grabbed) {
-        int myDY = getBooleanPref(Pref.MOUSE_INVERT) ? -dy : +dy;
+        int myDY = getBooleanPref(Pref.MOUSE_INVERT) ? +dy : -dy;
         
         screen.mouseMove(0, 0, dx, myDY);
       } else {
-        screen.mouseMove(x, y, 0, 0);
+        screen.mouseMove(x, height-y, 0, 0);
       }
     }
   }
-  
+
   private static void handleControllerEvent() {
+    /*
     if (Controllers.getEventSource() != controller) {
       return;
     }
@@ -663,6 +833,7 @@ public final class UI {
         screen.controllerUp(button);
       }
     }
+    */
   }
   
   private static void timer() {
@@ -676,9 +847,8 @@ public final class UI {
     if (dt <= 0.0f) {
       return;
     }
-    
+
     // Step subsystems.
-    
     RendererHome.step(dt);
     
     // Pass the time to the screen if enabled.
@@ -717,15 +887,15 @@ public final class UI {
     // Update display.
     
     System.setOut(NULL_OUT);
-    
+
     try {
-      Display.update(); // JInput may print warnings during this call
+      //Display.update(); // JInput may print warnings during this call
+      if (UI.window != 0) { glfwSwapBuffers(UI.window); };
     } finally {
       System.setOut(STD_OUT);
     }
     
     // Window close request.
-    
     checkForWindowCloseRequest();
     
     if (screen == null) {
@@ -739,9 +909,13 @@ public final class UI {
     if (screen == null) {
       return;
     }
-    
+
+    //UI.handleKeyEvent();
+    //UI.handleMouseEvent();
+
+    /*
     // Key events.
-    
+
     if (Keyboard.isCreated()) {
       while (Keyboard.next()) {
         handleKeyEvent();
@@ -774,7 +948,7 @@ public final class UI {
           return;
         }
       }
-    }
+    }*/
     
     // Timer.
     
@@ -783,10 +957,9 @@ public final class UI {
     if (screen == null) {
       return;
     }
-    
+
     // Paint.
-    
-    if (Display.isVisible()) {
+    if (glfwGetWindowAttrib(window, GLFW_FOCUSED) != 0) { // TODO:
       paint();
       
       updateFPSCounter(true);
@@ -806,6 +979,8 @@ public final class UI {
   
   public static void loop(ErrorLogger errorLogger) throws UIException {
     while (screen != null) {
+      glfwPollEvents();
+
       try {
         loopIteration();
       } catch (Throwable t) {
@@ -830,7 +1005,8 @@ public final class UI {
   }
   
   public static void rebuild() throws UIException {
-    if (Display.isCreated()) {
+    //if (Display.isCreated()) {
+    if (window != 0) { // TODO:
       deinitializeHUD();
       deinitializeGameFuncs();
       deinitializeGUIHome();
@@ -841,10 +1017,10 @@ public final class UI {
       deinitializeGfx();
       deinitializeDisplay();
     }
-    
+
     try {
       initializeDisplay();
-    } catch (LWJGLException ex) {
+    } catch (IllegalStateException ex) {
       storedEx = new UIException(ex);
       
       throw storedEx;
@@ -870,12 +1046,14 @@ public final class UI {
   }
   
   private static void deinitializeDisplay() {
+    /* TODO:
     if (!Display.isFullscreen() && Display.isVisible()) {
       setPref(Pref.WINDOW_X, Math.max(Display.getX(), 0));
       setPref(Pref.WINDOW_Y, Math.max(Display.getY(), 0));
     }
+    */
     
-    Display.destroy();
+    //Display.destroy();
   }
   
   private static void deinitializeGfx() {
@@ -883,19 +1061,19 @@ public final class UI {
   }
   
   private static void deinitializeKeyboard() {
-    Keyboard.destroy();
+    //Keyboard.destroy();
     
-    origChs = null;
+    KeyboardState.origChs = null;
   }
   
   private static void deinitializeMouse() {
-    Mouse.destroy();
+    //Mouse.destroy();
   }
   
   private static void deinitializeControllers() {
-    Controllers.destroy();
+    //Controllers.destroy();
     
-    controller = null;
+    //controller = null;
     axisValues = null;
   }
   
@@ -928,9 +1106,10 @@ public final class UI {
     
     hud = null;
   }
-  
+
   public static void deinitialize() {
-    if (Display.isCreated()) {
+    //if (Display.isCreated()) {
+    if (window != 0) {
       deinitializeHUD();
       deinitializeFPSCounter();
       deinitializeGameFuncs();
@@ -948,7 +1127,7 @@ public final class UI {
       deinitializeAudio();
       deinitializeDataFuncs();
     }
-    
+    glfwTerminate();
     storedEx = null;
   }
   

@@ -26,8 +26,9 @@ import com.uppgarn.nuncabola.preferences.*;
 import com.uppgarn.nuncabola.ui.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F5;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public final class ReplayLookScreen extends Screen {
   public static final ReplayLookScreen INSTANCE = new ReplayLookScreen();
@@ -78,7 +79,7 @@ public final class ReplayLookScreen extends Screen {
       yState.set(0, true);
     } else if (isKey(code, ch, Pref.KEY_BACKWARD)) {
       yState.set(1, true);
-    } else if (code == Keyboard.KEY_F5) {
+    } else if (code == GLFW_KEY_F5) {
       exitRequested();
     }
   }

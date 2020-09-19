@@ -26,8 +26,10 @@ import com.uppgarn.nuncabola.ui.*;
 import com.uppgarn.nuncabola.ui.hud.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ESCAPE;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F10;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public abstract class PlayActionScreen extends GUIScreen {
   private PlaySeries series;
@@ -94,7 +96,7 @@ public abstract class PlayActionScreen extends GUIScreen {
       toggleCamera();
     } else if (isKey(code, ch, Pref.KEY_PAUSE)) {
       goToPlayPauseScreen();
-    } else if (code == Keyboard.KEY_F10) {
+    } else if (code == GLFW_KEY_F10) {
       hud.toggleVisible();
     }
   }
@@ -132,7 +134,7 @@ public abstract class PlayActionScreen extends GUIScreen {
   
   @Override
   public final void exitRequested() {
-    if (isKey(Keyboard.KEY_ESCAPE, (char) 0, Pref.KEY_PAUSE)) {
+    if (isKey(GLFW_KEY_ESCAPE, (char) 0, Pref.KEY_PAUSE)) {
       goToPlayPauseScreen();
     } else {
       Audio.stopSounds();

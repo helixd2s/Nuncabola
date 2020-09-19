@@ -41,10 +41,20 @@ final class Mesh {
   private int vertCount;
   private int ebo;
   private int elemCount;
-  
-  public Mesh(Asset asset, ByteBuffer vboBuf, ByteBuffer eboBuf) {
+
+  // ValerA Geometry Set Location
+  public SolidBase solBase;
+  public int materialIndex;
+  public int geometryIndex;
+  public Body body;
+
+  public Mesh(Asset asset, SolidBase solBase, ByteBuffer vboBuf, ByteBuffer eboBuf, Body body, int geometryIndex, int materialIndex) {
     this.asset = asset;
-    
+    this.body = body;
+    this.geometryIndex = geometryIndex;
+    this.materialIndex = materialIndex;
+    this.solBase = solBase;
+
     vbo       = createVBO(vboBuf);
     vertCount = vboBuf.limit() / VBO_ENTRY;
     ebo       = createEBO(eboBuf);

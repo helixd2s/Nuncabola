@@ -20,18 +20,27 @@ package com.uppgarn.nuncabola.ui.screens;
 import com.uppgarn.nuncabola.core.audio.*;
 import com.uppgarn.nuncabola.core.gui.*;
 import com.uppgarn.nuncabola.preferences.*;
+import com.uppgarn.nuncabola.ui.UI;
+
+import java.nio.DoubleBuffer;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
+import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public abstract class MenuScreen extends GUIScreen {
   @Override
   public void enter(Screen from) {
     super.enter(from);
     
-    if (Mouse.isCreated()) {
-      getGUI().point(Mouse.getX(), Mouse.getY());
+    //if (Mouse.isCreated()) {
+    //  getGUI().point(Mouse.getX(), Mouse.getY());
+    //}
+    {
+      double[] xpos = new double[1], ypos = new double[1];
+      glfwGetCursorPos(UI.window, xpos, ypos);
     }
   }
   
@@ -81,7 +90,7 @@ public abstract class MenuScreen extends GUIScreen {
       move(Direction.UP);
     } else if (isKey(code, ch, Pref.KEY_BACKWARD)) {
       move(Direction.DOWN);
-    } else if (code == Keyboard.KEY_RETURN) {
+    } else if (code == GLFW_KEY_ENTER) {
       activate();
     }
   }

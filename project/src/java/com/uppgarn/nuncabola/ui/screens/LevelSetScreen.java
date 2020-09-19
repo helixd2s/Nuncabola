@@ -27,8 +27,9 @@ import com.uppgarn.nuncabola.ui.*;
 import com.uppgarn.nuncabola.ui.components.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F8;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public final class LevelSetScreen extends MenuScreen {
   private static final int ROW_COUNT    = 5;
@@ -357,7 +358,7 @@ public final class LevelSetScreen extends MenuScreen {
       if (getBooleanPref(Pref.CHEAT)) {
         performAction(Action.COMPLETE_LEVELS);
       }
-    } else if (code == Keyboard.KEY_F8) {
+    } else if (code == GLFW_KEY_F8) {
       if (getBooleanPref(Pref.CHEAT)) {
         performAction(Action.CREATE_SCREENSHOTS);
       }

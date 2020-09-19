@@ -21,7 +21,9 @@ import com.uppgarn.nuncabola.core.renderers.*;
 import com.uppgarn.nuncabola.functions.*;
 import com.uppgarn.nuncabola.ui.*;
 
-import org.lwjgl.input.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F10;
+
+//import org.lwjgl.input.*;
 
 public final class PlayPoseScreen extends Screen {
   public static final PlayPoseScreen INSTANCE = new PlayPoseScreen();
@@ -41,7 +43,7 @@ public final class PlayPoseScreen extends Screen {
   
   @Override
   public void keyDown(int code, char ch) {
-    if (code == Keyboard.KEY_F10) {
+    if (code == GLFW_KEY_F10) {
       exitRequested();
     }
   }

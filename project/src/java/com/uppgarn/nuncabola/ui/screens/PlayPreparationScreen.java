@@ -25,8 +25,9 @@ import com.uppgarn.nuncabola.preferences.*;
 import com.uppgarn.nuncabola.ui.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public abstract class PlayPreparationScreen extends PlayActionScreen {
   private GameFlyer gameFlyer;
@@ -81,7 +82,7 @@ public abstract class PlayPreparationScreen extends PlayActionScreen {
   
   @Override
   public final void keyDown(int code, char ch) {
-    if (code == Keyboard.KEY_RETURN) {
+    if (code == GLFW_KEY_ENTER) {
       goToPlayMainScreen();
     } else {
       super.keyDown(code, ch);

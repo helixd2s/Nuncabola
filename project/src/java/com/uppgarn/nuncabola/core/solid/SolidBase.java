@@ -42,6 +42,8 @@ public final class SolidBase {
   public SwitchBase[] switchBases;
   public ItemBase  [] itemBases;
   public BallBase  [] ballBases;
+
+  public int materialSetOffset = 0;
   
   public SolidBase() {
     meta = new Meta();

@@ -25,8 +25,9 @@ import com.uppgarn.nuncabola.ui.*;
 import com.uppgarn.nuncabola.ui.hud.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.*;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public abstract class ReplayActionScreen extends GUIScreen {
   private HUD hud;
@@ -72,13 +73,13 @@ public abstract class ReplayActionScreen extends GUIScreen {
     } else if (isKey(code, ch, Pref.KEY_BACKWARD)) {
       changeSpeed(-1);
     } else if (isKey(code, ch, Pref.KEY_PAUSE)
-        || (code == Keyboard.KEY_RETURN)) {
+        || (code == GLFW_KEY_ENTER)) {
       goToReplayPauseScreen();
-    } else if (code == Keyboard.KEY_F5) {
+    } else if (code == GLFW_KEY_F5) {
       if (getBooleanPref(Pref.CHEAT)) {
         UI.gotoScreen(ReplayLookScreen.INSTANCE);
       }
-    } else if (code == Keyboard.KEY_F10) {
+    } else if (code == GLFW_KEY_F10) {
       hud.toggleVisible();
     }
   }
@@ -119,7 +120,7 @@ public abstract class ReplayActionScreen extends GUIScreen {
   
   @Override
   public final void exitRequested() {
-    if (isKey(Keyboard.KEY_ESCAPE, (char) 0, Pref.KEY_PAUSE)) {
+    if (isKey(GLFW_KEY_ESCAPE, (char) 0, Pref.KEY_PAUSE)) {
       goToReplayPauseScreen();
     } else {
       Audio.stopSounds();

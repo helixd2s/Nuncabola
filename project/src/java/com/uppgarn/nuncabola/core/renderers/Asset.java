@@ -17,6 +17,7 @@
 
 package com.uppgarn.nuncabola.core.renderers;
 
+import com.helixd2s.valera.ValerABase;
 import com.uppgarn.nuncabola.core.graphics.*;
 import com.uppgarn.nuncabola.core.image.*;
 import com.uppgarn.nuncabola.core.math.*;
@@ -31,7 +32,7 @@ final class Asset {
   private static int toByte(float f) {
     return (int) (f * 255.0f);
   }
-  
+
   private static int toInt(Color4 c) {
     int r = toByte(c.r);
     int g = toByte(c.g);
@@ -40,33 +41,51 @@ final class Asset {
     
     return r | (g << 8) | (b << 16) | (a << 24);
   }
-  
+
+  //
   private final Material mtrl;
-  
+
+  //
   private final int flags;
-  
+
+  // packed color as Unorm4x8
   private final int dInt;
   private final int aInt;
   private final int sInt;
   private final int eInt;
   private final int hInt;
-  
+
+  // opengl texture (original)
   private int texture;
-  
+
+  // pointer to Material Set and Texture Set
+  public final ValerABase.MaterialSet materialSet = null;
+  public final ValerABase.TextureSet textureSet = null;
+
+  // bound with Material Set, with ID
+  public int materialID;
+
+  // texture mapping for Texture Set, not GL handle
+  public int dTextureID; // diffuse
+  public int aTextureID; // ambient
+  public int sTextureID; // specular
+  public int eTextureID; // emission
+
+  //
   public Asset(Material mtrl, boolean shadowedEnabled) {
     this.mtrl = mtrl;
-    
+
     flags = shadowedEnabled ? mtrl.flags : mtrl.flags & ~Material.SHADOWED;
-    
+
     dInt = toInt (mtrl.d);
     aInt = toInt (mtrl.a);
     sInt = toInt (mtrl.s);
     eInt = toInt (mtrl.e);
     hInt = toByte(mtrl.h);
-    
+
     texture = createTexture();
   }
-  
+
   private Image getImage(String path) {
     if (!path.isEmpty()) {
       for (int idx0 = 0; idx0 < 2; idx0++) {

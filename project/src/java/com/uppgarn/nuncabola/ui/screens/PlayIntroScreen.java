@@ -26,8 +26,10 @@ import com.uppgarn.nuncabola.preferences.*;
 import com.uppgarn.nuncabola.ui.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_ENTER;
+import static org.lwjgl.glfw.GLFW.GLFW_KEY_F10;
 
-import org.lwjgl.input.*;
+//import org.lwjgl.input.*;
 
 public final class PlayIntroScreen extends GUIScreen {
   public static final PlayIntroScreen INSTANCE = new PlayIntroScreen();
@@ -152,9 +154,9 @@ public final class PlayIntroScreen extends GUIScreen {
   
   @Override
   public void keyDown(int code, char ch) {
-    if (code == Keyboard.KEY_RETURN) {
+    if (code == GLFW_KEY_ENTER) {
       goToPlayReadyScreen();
-    } else if (code == Keyboard.KEY_F10) {
+    } else if (code == GLFW_KEY_F10) {
       UI.gotoScreen(PlayPoseScreen.INSTANCE);
     }
   }

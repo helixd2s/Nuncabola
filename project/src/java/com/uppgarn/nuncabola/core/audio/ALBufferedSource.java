@@ -41,7 +41,7 @@ final class ALBufferedSource {
   private Integer createSource() {
     try {
       return alGenSources();
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       return null;
     }
   }
@@ -49,7 +49,7 @@ final class ALBufferedSource {
   private Integer createBuffer() {
     try {
       return alGenBuffers();
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       return null;
     }
   }
@@ -64,7 +64,7 @@ final class ALBufferedSource {
       
       alBufferData(buffer, format, data.getBuffer(), SAMPLE_RATE);
       alSourceQueueBuffers(source, buffer);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -76,7 +76,7 @@ final class ALBufferedSource {
     
     try {
       alSourcef(source, AL_GAIN, volume);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -88,7 +88,7 @@ final class ALBufferedSource {
     
     try {
       return alGetSourcei(source, AL_SOURCE_STATE) == AL_STOPPED;
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
       
       return true;
@@ -102,7 +102,7 @@ final class ALBufferedSource {
     
     try {
       alSourcePlay(source);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -114,7 +114,7 @@ final class ALBufferedSource {
     
     try {
       alSourcePause(source);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -127,7 +127,7 @@ final class ALBufferedSource {
     try {
       alSourcePause (source); // workaround
       alSourceRewind(source);
-    } catch (OpenALException ex) {
+    } catch (IllegalStateException ex) {
       errorOccurred = true;
     }
   }
@@ -136,13 +136,13 @@ final class ALBufferedSource {
     if (source != null) {
       try {
         alDeleteSources(source);
-      } catch (OpenALException ex) {
+      } catch (IllegalStateException ex) {
       }
     }
     if (buffer != null) {
       try {
         alDeleteBuffers(buffer);
-      } catch (OpenALException ex) {
+      } catch (IllegalStateException ex) {
       }
     }
   }

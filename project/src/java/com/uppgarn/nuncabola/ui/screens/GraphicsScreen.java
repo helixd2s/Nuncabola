@@ -86,7 +86,7 @@ public final class GraphicsScreen extends MenuScreen {
         Container c2 = gui.hArray(c1);
         
         {
-          boolean enabled = Display.getDisplayMode().isFullscreenCapable();
+          boolean enabled = false;//Display.getDisplayMode().isFullscreenCapable();
           boolean on      = getBooleanPref(Pref.FULLSCREEN);
           
           Button btn0 = gui.button(c2);

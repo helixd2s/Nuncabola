@@ -25,9 +25,11 @@ import com.uppgarn.nuncabola.core.solid.*;
 import com.uppgarn.nuncabola.preferences.*;
 
 import static com.uppgarn.nuncabola.functions.BaseFuncs.*;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 
 import com.uppgarn.codelibf.util.*;
 
+import com.uppgarn.nuncabola.ui.UI;
 import org.lwjgl.*;
 import org.lwjgl.opengl.*;
 
@@ -262,8 +264,9 @@ public final class LevelSetFuncs {
     // Update display contents.
     
     try {
-      Display.swapBuffers();
-    } catch (LWJGLException ex) {
+      //Display.swapBuffers();
+      glfwSwapBuffers(UI.window);
+    } catch (IllegalStateException ex) {
       throw new RuntimeException(ex);
     }
     
